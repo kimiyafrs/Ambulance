@@ -213,10 +213,10 @@ class VisitModel {
   set FlSignal(List<FlSpot>? value) => flSignal = value;
 
   factory VisitModel.fromJson(Map<String, dynamic> json) {
-    print("Raw JSON data: $json"); // پرینت داده‌های خام JSON
+    //print("Raw JSON data: $json");
 
     List<dynamic>? signalsRaw = json['Signals'] ?? [];
-    print("Raw Signals List: $signalsRaw"); // پرینت لیست سیگنال‌های خام
+    print("Raw Signals List: $signalsRaw");
 
     List<FlSpot>? flSignalConverted = signalsRaw
         ?.expand((element) => element as List<dynamic>)
@@ -224,18 +224,18 @@ class VisitModel {
         .asMap()
         .entries
         .map((entry) {
-      double x = entry.key.toDouble();
+      double x = entry.key.toDouble()/20;
       double y = (entry.value as num).toDouble();
       return FlSpot(x, y);
     })
         .toList();
 
-    print("Converted FlSignal List: $flSignalConverted"); // پرینت لیست تبدیل‌شده به FlSpot
+    print("Converted FlSignal List: $flSignalConverted");
 
     return VisitModel(
       Image: json['Image'] ?? [],
       Rr: json['Rr'] ?? 0,
-      Fico2: json['Fico2'] ?? 0,
+      Fico2: json['Fico2'] ?? 08,
       T2: json['T2'] ?? 0,
       T1: json['T1'] ?? 0,
       NibpMean: json['NibpMean'] ?? 0,

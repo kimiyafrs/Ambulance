@@ -43,6 +43,7 @@ dependencies:
   connectivity_plus: ^6.0.5
   fl_chart: ^0.68.0
   shamsi_date: ^1.0.4
+  syncfusion_flutter_charts: ^26.1.0
   #connectivity_plus: ^4.0.1
 
 

@@ -13,12 +13,12 @@ class VisitScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final HttpViewModel httpViewModel = Get.find<HttpViewModel>();
     final VisitModel visitModel = Get.find<VisitModel>();
-    final Map<String, dynamic> arguments = Get.arguments; // دریافت آرگومان‌ها
+    //final Map<String, dynamic> arguments = Get.arguments;
     // final String? time = arguments['time'];
     // final String? ambulanceCode = arguments['ambulanceCode'];
-    final String? patientName = arguments['patientName'];
+    //final String? patientName = arguments['patientName'];
 
-    // برای دیباگ اطلاعات سیگنال، دستور پرینت را اینجا بزنید
+
     print(visitModel.FlSignal);
 
     return Scaffold(
@@ -33,23 +33,23 @@ class VisitScreen extends StatelessWidget {
         body: GetBuilder<HttpViewModel>(
             init: httpViewModel,
             builder: (controller) {
-              // تبدیل time از int به String در صورت نیاز
+
               //final String timeAsString = time?.toString() ?? '';
 
-              // فیلتر کردن ویزیت‌ها براساس زمان، کد آمبولانس و اسم بیمار
-              final filteredVisits = controller.visits.where((visit) {
-                // پرینت مقادیر برای دیباگ
-                print("Visit TimeReceived: ${visit.TimeReceived}, Visit DeviceCode: ${visit.DeviceCode}, Visit PatientName: ${visit.PatientName}");
+              //final filteredVisits = controller.visits.where((visit) {
 
-                return
+                //print("Visit TimeReceived: ${visit.TimeReceived}, Visit DeviceCode: ${visit.DeviceCode}, Visit PatientName: ${visit.PatientName}");
+
+                //return
                   // visit.TimeReceived?.trim() == timeAsString.trim() &&
                   //   visit.DeviceCode?.trim() == ambulanceCode?.trim() &&
-                    visit.PatientName?.trim() == patientName?.trim();
-              }).toList();
+                    //visit.PatientName?.trim() == patientName?.trim();
+             // }
+                // ).toList();
 
-              print('Filtered Visits Count: ${filteredVisits.length}');
+             // print('Filtered Visits Count: ${filteredVisits.length}');
 
-              if (filteredVisits.isEmpty) {
+              if (controller.visits.isEmpty) {
                 return Center(child: CircularProgressIndicator());
               } else {
                 return ListView.builder(
@@ -206,6 +206,7 @@ class VisitScreen extends StatelessWidget {
                                         .Style(),
                                   ),
                                 ),
+                                buildDivider(context),
                                 buildCard(
                                   context,
                                   child: Padding(
@@ -215,9 +216,9 @@ class VisitScreen extends StatelessWidget {
                                       children: [
                                         Text('Signal :').Style(),
                                         SizedBox(
-                                          height: 200, // ارتفاع ثابت برای چارت
+                                          height: 400,
                                           child: SignalChart(
-                                            signals: visit.FlSignal ?? [], // داده‌های سیگنال را اینجا منتقل کنید
+                                            signals: visit.FlSignal ?? [],
                                           ),
                                         ),
                                       ],

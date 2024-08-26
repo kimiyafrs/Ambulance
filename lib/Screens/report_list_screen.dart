@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:untitled2/AppValues/app_values.dart';
 import 'package:untitled2/Screens/visit_list_screen.dart';
 import '../Http/http_view_model.dart';
+
 int? selectedIndex;
+
 class ReportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -34,23 +36,20 @@ class ReportScreen extends StatelessWidget {
                             if (report.Time != null) {
                               print('Ambulance Time: ${report.Time}');
                               try {
-                                // پاک‌سازی لیست ویزیت‌ها قبل از بارگذاری ویزیت‌های جدید
                                 httpViewModel.clearVisits();
 
-                                // تنظیم زمان و بارگذاری ویزیت‌ها
                                 await httpViewModel.setTime(report.Time!);
                                 await httpViewModel.getVisit();
 
                                 selectedIndex = index;
 
-                                // ارسال آرگومان‌ها به صفحه ویزیت
-                                Get.to(
-                                  VisitScreen(),
-                                  arguments: {
-                                    // 'time': report.Time.toString(), // زمان
-                                    // 'ambulanceCode': report.Code, // کد آمبولانس
-                                    'patientName': report.PatientName, // اسم بیمار
-                                  },
+                                Get.toNamed(
+                                  '/screen_visit',
+                                  // arguments: {
+                                  //   // 'time': report.Time.toString(),
+                                  //   // 'ambulanceCode': report.Code,
+                                  //   'patientName': report.PatientName,
+                                  // },
                                 );
 
                                 //Get.to(VisitScreen());
@@ -63,7 +62,6 @@ class ReportScreen extends StatelessWidget {
                             }
                           },
                           child: Card(
-
                             color: Colors.cyan.shade300,
                             elevation: 12.0,
                             margin: EdgeInsets.all(
@@ -73,12 +71,11 @@ class ReportScreen extends StatelessWidget {
                                   AppValues.getWidth(context) * 0.005),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-
                                 children: [
                                   ListTile(
                                     title: Text(report.Code.toString()),
                                     subtitle:
-                                    Text(report.PatientName.toString()),
+                                        Text(report.PatientName.toString()),
                                     trailing: Text(report.TimeJalali ?? ''),
                                   )
                                 ],

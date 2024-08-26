@@ -33,8 +33,8 @@ class HttpViewModel extends GetxController {
   }
 
   void clearVisits() {
-    visits.clear();  // پاک‌سازی لیست ویزیت‌ها
-    update();  // به‌روزرسانی رابط کاربری
+    visits.clear();
+    update();
   }
 
   Future<void> _initConnectivity() async {
@@ -130,6 +130,8 @@ class HttpViewModel extends GetxController {
     }
   }
 
+  ///
+  ///
   Future<void> getVisit() async {
     if (_model.postFile['DeviceCode'] == null || _model.postFile['DeviceCode'].isEmpty) {
       print('Error: DeviceCode is empty. Please set a valid DeviceCode.');
