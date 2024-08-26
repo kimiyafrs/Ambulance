@@ -6,7 +6,11 @@ class AmbulanceListModel {
   bool? _isVisible;
 
   AmbulanceListModel(
-      {int? id, String? descreption, String? token, code, bool? isVisible}) {
+      {int? id,
+      String? descreption,
+      String? token,
+      String? code,
+      bool? isVisible}) {
     _code = code;
     _descreption = descreption;
     _id = id;
@@ -34,7 +38,7 @@ class AmbulanceListModel {
       id: json['Id'],
       code: json['Code'],
       token: json['Token'],
-      isVisible:json ['IsVisible'],
+      isVisible: json['IsVisible'],
       descreption: json['Description'],
     );
   }

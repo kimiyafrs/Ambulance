@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart'as http;
-
-import 'package:untitled2/Model/ambulance_model.dart';
 
 class RequestModel {
   String? _token;
@@ -31,5 +27,3 @@ class RequestModel {
     );
   }
 }
-
-
