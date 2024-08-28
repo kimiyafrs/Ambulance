@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
-
 import '../AppValues/app_values.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -22,14 +21,14 @@ class SettingScreen extends StatelessWidget {
     final Map<String, List<Widget>> buttonContent = {
       'Connection': [
         Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
               width: 150,
               height: 30,
               child: TextField(
-                controller: _controller, // بدون مقداردهی اولیه
+                controller: _controller,
                 decoration: InputDecoration(
                   labelText: 'Base URL',
                   labelStyle: TextStyle(color: Colors.grey, fontSize: 10),
@@ -37,7 +36,7 @@ class SettingScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             SizedBox(
               width: 150,
               height: 30,
@@ -51,22 +50,19 @@ class SettingScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                // مستقیماً مقدار جدید را در API_BASE_URL قرار دهید
                 String newUrl = _controller.text.trim();
-
-                // به‌روزرسانی مقدار API_BASE_URL
                 apiBaseUrl.value = newUrl;
                 AppValues.updateBaseUrl(newUrl);
-
                 Get.snackbar('Success', 'Base URL updated to: ${apiBaseUrl.value}');
               },
-              child: Text('ثبت'),
+              child: Text('Confirm :)'),
             ),
           ],
         ),
       ],
       'Theme': [
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
               onPressed: () {
@@ -106,8 +102,9 @@ class SettingScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('صفحه دو قسمتی'),
+        title: Text('Setting'),
       ),
+      backgroundColor: Colors.cyan,
       body: Row(
         children: [
           Expanded(
@@ -115,14 +112,14 @@ class SettingScreen extends StatelessWidget {
             child: ListView.builder(
               itemCount: items.length,
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      selectedContent.value = buttonContent[items[index]]!;
-                    },
-                    child: Text(items[index]),
+                return ListTile(
+                  title: Text(
+                    items[index],
+                    style: TextStyle(fontSize: 14),
                   ),
+                  onTap: () {
+                    selectedContent.value = buttonContent[items[index]]!;
+                  },
                 );
               },
             ),
@@ -130,18 +127,20 @@ class SettingScreen extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Container(
-              padding: EdgeInsets.all(16.0),
-              color: Colors.blueGrey[50],
+              padding: EdgeInsets.all(AppValues.getWidth(context) * 0.005),
+              color: Colors.white,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ValueListenableBuilder<List<Widget>>(
                     valueListenable: selectedContent,
                     builder: (context, value, child) {
                       if (value.isEmpty) {
-                        return Text('محتوایی برای نمایش وجود ندارد');
+                        return Text('You did not select an option!');
                       }
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: value,
                       );
                     },
@@ -155,5 +154,3 @@ class SettingScreen extends StatelessWidget {
     );
   }
 }
-
-

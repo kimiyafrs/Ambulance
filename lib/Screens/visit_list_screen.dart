@@ -36,7 +36,7 @@ class VisitScreen extends StatelessWidget {
       body:  GetBuilder<HttpViewModel>(
           builder: (controller) {
             if (controller.isLoading) {
-              // نمایش علامت لودینگ
+
               return Center(
                 child: SpinKitFadingCircle(
                   color: Colors.blue,

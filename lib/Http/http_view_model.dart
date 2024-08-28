@@ -33,6 +33,8 @@ class HttpViewModel extends GetxController {
     Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
   }
 
+
+
   /// Clears the list of visits and updates the UI.
   void clearVisits() {
     visits.clear();
@@ -160,8 +162,8 @@ class HttpViewModel extends GetxController {
     String url = '${AppValues.API_BASE_URL}GetFile';
 
     try {
-      isLoading = true;  // شروع لودینگ
-      update();  // به‌روزرسانی UI
+      isLoading = true;
+      update();
 
       final response = await http.post(
         Uri.parse(url),
@@ -174,7 +176,7 @@ class HttpViewModel extends GetxController {
           'Token': _model.token,
           'DeviceCode': _model.code ?? '0'
         }),
-      ).timeout(Duration(seconds: 60));
+      ).timeout(Duration(seconds: 120));
 
       print('Visits: ${response.body}');
 
@@ -182,7 +184,7 @@ class HttpViewModel extends GetxController {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
         VisitModel visitModel = VisitModel.fromJson(jsonResponse);
 
-        // تنظیم مقادیر پیش‌فرض در صورت نبود اطلاعات
+
         visitModel.DeviceCode ??= '0';
         visitModel.TimeReceived ??= '0';
         visitModel.PatientNationalCode ??= '0';
@@ -217,8 +219,8 @@ class HttpViewModel extends GetxController {
     } catch (e) {
       print('Failed to fetch visit: $e');
     } finally {
-      isLoading = false;  // پایان لودینگ
-      update();  // به‌روزرسانی UI
+      isLoading = false;
+      update();
     }
   }
 
@@ -301,5 +303,11 @@ class HttpViewModel extends GetxController {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
     Jalali jalaliDate = Jalali.fromDateTime(dateTime);
     return '${jalaliDate.year}/${jalaliDate.month}/${jalaliDate.day}';
+  }
+
+
+  void setLoading(bool value) {
+    isLoading = value;
+    update();
   }
 }
