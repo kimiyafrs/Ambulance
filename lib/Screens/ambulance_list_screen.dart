@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:untitled2/Extension/extensions.dart';
 import 'package:untitled2/Screens/report_list_screen.dart';
+import 'package:untitled2/Screens/visit_list_screen.dart';
 import '../AppValues/app_values.dart';
 import '../Http/http_view_model.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+
+class AmbulanceListController extends GetxController {
+  var selectedIndex = 0.obs;
+
+  void onTabChange(int index) {
+    selectedIndex.value = index;
+  }
+}
 
 class AmbulanceListScreen extends StatelessWidget {
+  final AmbulanceListController controller = Get.put(AmbulanceListController());
+
   @override
   Widget build(BuildContext context) {
     final httpViewModel = Get.find<HttpViewModel>();
@@ -63,12 +76,11 @@ class AmbulanceListScreen extends StatelessWidget {
                                   title: Text(ambulance.id.toString()).Style(),
                                   subtitle: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(ambulance.code ?? 'No code').Style(),
                                       Text(ambulance.isVisible.toString())
                                           .Style(),
-
                                     ],
                                   ),
                                 ),
@@ -106,10 +118,10 @@ class AmbulanceListScreen extends StatelessWidget {
                       color: Colors.cyan,
                       elevation: 12.0,
                       margin:
-                          EdgeInsets.all(AppValues.getWidth(context) * 0.03),
+                      EdgeInsets.all(AppValues.getWidth(context) * 0.03),
                       child: Padding(
                         padding:
-                            EdgeInsets.all(AppValues.getWidth(context) * 0.005),
+                        EdgeInsets.all(AppValues.getWidth(context) * 0.005),
                         child: Column(
                           children: [
                             ListTile(
@@ -117,7 +129,7 @@ class AmbulanceListScreen extends StatelessWidget {
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(ambulance.code! ),
+                                  Text(ambulance.code ?? 'No code'),
                                   Text(ambulance.isVisible.toString()),
                                 ],
                               ),
@@ -131,6 +143,43 @@ class AmbulanceListScreen extends StatelessWidget {
               );
             }
           },
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+          child: Obx(() => GNav(
+            rippleColor: Colors.blue[300]!,
+            hoverColor: Colors.blue[100]!,
+            gap: 8,
+            activeColor: Colors.black,
+            iconSize: 24,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            duration: Duration(milliseconds: 400),
+            tabBackgroundColor: Colors.blue[100]!,
+            color: Colors.black,
+            tabs: [
+              GButton(
+                icon: Icons.home,
+                text: 'Home',
+              ),
+              GButton(
+                icon: Icons.settings,
+                text: 'Setting',
+              ),
+            ],
+            selectedIndex: controller.selectedIndex.value,
+            onTabChange: (index) {
+              controller.onTabChange(index);
+
+              // Ensure the navigation route exists before navigating
+              if (index == 1) {
+                if (Get.isRegistered<HttpViewModel>()) {
+                  Get.toNamed('/Setting');
+                }
+              }
+            },
+          )),
         ),
       ),
     );

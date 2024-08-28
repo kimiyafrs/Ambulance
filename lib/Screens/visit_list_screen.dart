@@ -1,243 +1,226 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import '../Chart/signal_chart.dart';
 import '../Extension/extensions.dart';
-import '../Http/http_view_model.dart';
 import '../AppValues/app_values.dart';
 import 'dart:typed_data';
+import '../Http/http_view_model.dart';
 import '../Model/visit_model.dart';
 
+/// Displays the visit details based on the selected report from the ReportScreen.
+/// The visit information is presented in various cards, and if an image is available, it is shown.
+/// The screen also includes a chart to display signal data if provided.
 class VisitScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final HttpViewModel httpViewModel = Get.find<HttpViewModel>();
-    final VisitModel visitModel = Get.find<VisitModel>();
-    //final Map<String, dynamic> arguments = Get.arguments;
-    // final String? time = arguments['time'];
-    // final String? ambulanceCode = arguments['ambulanceCode'];
-    //final String? patientName = arguments['patientName'];
+    final VisitModel visitModel = Get.arguments['visitModel'];
 
+    Uint8List? imageBytes;
 
-    print(visitModel.FlSignal);
+    if (visitModel.Image!.isNotEmpty) {
+      imageBytes = Uint8List.fromList(visitModel.Image!.cast<int>());
+    } else {
+      print('Image is not available');
+    }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Visit List',
-            style: TextStyle(color: Colors.indigo),
-          ),
-          elevation: 12.0,
-          centerTitle: true,
+      appBar: AppBar(
+        title: Text(
+          'Visits',
+          style: TextStyle(color: Colors.indigo),
         ),
-        body: GetBuilder<HttpViewModel>(
-            init: httpViewModel,
-            builder: (controller) {
-
-              //final String timeAsString = time?.toString() ?? '';
-
-              //final filteredVisits = controller.visits.where((visit) {
-
-                //print("Visit TimeReceived: ${visit.TimeReceived}, Visit DeviceCode: ${visit.DeviceCode}, Visit PatientName: ${visit.PatientName}");
-
-                //return
-                  // visit.TimeReceived?.trim() == timeAsString.trim() &&
-                  //   visit.DeviceCode?.trim() == ambulanceCode?.trim() &&
-                    //visit.PatientName?.trim() == patientName?.trim();
-             // }
-                // ).toList();
-
-             // print('Filtered Visits Count: ${filteredVisits.length}');
-
-              if (controller.visits.isEmpty) {
-                return Center(child: CircularProgressIndicator());
-              } else {
-                return ListView.builder(
-                    itemCount: controller.visits.length,
-                    itemBuilder: (context, index) {
-                      var visit = controller.visits[index];
-                      Uint8List? imageBytes;
-
-                      if (visit.Image!.isNotEmpty) {
-                        imageBytes =
-                            Uint8List.fromList(visit.Image!.cast<int>());
-                      } else {
-                        print('Image is not available');
-                      }
-
-                      return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+        elevation: 12.0,
+        centerTitle: true,
+      ),
+      body:  GetBuilder<HttpViewModel>(
+          builder: (controller) {
+            if (controller.isLoading) {
+              // نمایش علامت لودینگ
+              return Center(
+                child: SpinKitFadingCircle(
+                  color: Colors.blue,
+                  size: 50.0,
+                ),
+              );
+            } else {
+              return
+                SingleChildScrollView(
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          buildCard(
+                            context,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                buildCard(
-                                  context,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Patient name : ${visit.PatientName}')
-                                          .Style(),
-                                      Text('Age : ${visit.PatientAge.toString() }')
-                                          .Style(),
-                                      Text('Gender : ${visit.PatientGender}')
-                                          .Style(),
-                                      Text('National code : ${visit.PatientNationalCode ?? ''}')
-                                          .Style(),
-                                    ],
-                                  ),
+                                Text('Patient name : ${visitModel.PatientName}')
+                                    .Style(),
+                                Text(
+                                    'Age : ${visitModel.PatientAge.toString()}')
+                                    .Style(),
+                                Text('Gender : ${visitModel.PatientGender}')
+                                    .Style(),
+                                Text('National code : ${visitModel
+                                    .PatientNationalCode ?? ''}')
+                                    .Style(),
+                              ],
+                            ),
+                          ),
+                          buildDivider(context),
+                          buildCard(
+                            context,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              // Center row content
+                              children: [
+                                buildInfoColumn(context, [
+                                  Text('HR : ${visitModel.Hr.toString()}')
+                                      .Style(),
+                                  Text('Resp : ${visitModel.Resp.toString()}')
+                                      .Style(),
+                                  Text('Spo2 : ${visitModel.Spo2.toString()}')
+                                      .Style(),
+                                  Text('PR : ${visitModel.Pr.toString()}')
+                                      .Style(),
+                                ]),
+                                buildInfoColumn(context, [
+                                  Text('Sys : ${visitModel.NibpSys.toString()}')
+                                      .Style(),
+                                  Text('Dias : ${visitModel.NibpDias
+                                      .toString()}').Style(),
+                                  Text('Mean : ${visitModel.NibpMean
+                                      ?.toString()}').Style(),
+                                  Text('T1 : ${visitModel.T1.toString()}')
+                                      .Style(),
+                                  Text('T2 : ${visitModel.T2.toString()}')
+                                      .Style(),
+                                ]),
+                                buildInfoColumn(context, [
+                                  Text('Etco2 : ${visitModel.Etco2.toString()}')
+                                      .Style(),
+                                  Text('Fico2 : ${visitModel.Fico2.toString()}')
+                                      .Style(),
+                                  Text('RR : ${visitModel.Rr?.toString()}')
+                                      .Style(),
+                                ]),
+                              ],
+                            ),
+                          ),
+                          buildDivider(context),
+                          buildCard(
+                            context,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildInfoColumn(context, [
+                                  Text('Master lead : ${visitModel.MasterLead}')
+                                      .Style(),
+                                  Text('Wires : ${visitModel.Wires.toString()}')
+                                      .Style(),
+                                  Text('${visitModel.EcgFilter.toString()}')
+                                      .Style(),
+                                ]),
+                                buildInfoColumn(context, [
+                                  Text('Lead Count : ${visitModel.LeadCount
+                                      ?.toString()}')
+                                      .Style(),
+                                  Text('${visitModel.NotchFilter?.toString()}')
+                                      .Style(),
+                                ]),
+                              ],
+                            ),
+                          ),
+                          buildDivider(context),
+                          buildCard(
+                            context,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Tg : ${visitModel.Tg?.toString()}')
+                                    .Style(),
+                                Text('Ldl : ${visitModel.Ldl?.toString()}')
+                                    .Style(),
+                                Text('Hdl : ${visitModel.Hdl?.toString()}')
+                                    .Style(),
+                                Text('Glucose : ${visitModel.Glucose}').Style(),
+                              ],
+                            ),
+                          ),
+                          buildDivider(context),
+                          if (imageBytes != null)
+                            buildCard(
+                              context,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Image.memory(
+                                  imageBytes,
+                                  height: AppValues.getHight(context) * 0.3,
+                                  fit: BoxFit.cover,
                                 ),
-                                buildDivider(context),
-                                buildCard(
-                                  context,
-                                  child: Row(
-                                    children: [
-                                      buildInfoColumn(context, [
-                                        Text('HR : ${visit.Hr.toString()}')
-                                            .Style(),
-                                        Text('Resp : ${visit.Resp.toString() }')
-                                            .Style(),
-                                        Text('Spo2 : ${visit.Spo2.toString() }')
-                                            .Style(),
-                                        Text('PR : ${visit.Pr.toString() }')
-                                            .Style(),
-                                      ]),
-
-                                      buildInfoColumn(context, [
-                                        Text('Sys : ${visit.NibpSys.toString()}')
-                                            .Style(),
-                                        Text('Dias : ${visit.NibpDias.toString()}')
-                                            .Style(),
-                                        Text('Mean : ${visit.NibpMean?.toString()}')
-                                            .Style(),
-                                        Text('T1 : ${visit.T1.toString() }')
-                                            .Style(),
-                                        Text('T2 : ${visit.T2.toString() }')
-                                            .Style(),
-                                      ]),
-
-
-                                      buildInfoColumn(context, [
-                                        Text('Etco2 : ${visit.Etco2.toString()}')
-                                            .Style(),
-                                        Text('Fico2 : ${visit.Fico2.toString() }')
-                                            .Style(),
-                                        Text('RR : ${visit.Rr?.toString() }')
-                                            .Style(),
-                                      ]),
-
-                                    ],
-                                  ),
-                                ),
-                                buildDivider(context),
-                                buildCard(
-                                  context,
-                                  child: Row(
-                                    children: [
-                                      buildInfoColumn(context, [
-                                        Text('Master lead : ${visit.MasterLead }')
-                                            .Style(),
-                                        Text('Wires : ${visit.Wires.toString() }')
-                                            .Style(),
-                                        Text(' ${visit.EcgFilter.toString() }')
-                                            .Style(),
-                                      ]),
-
-                                      buildInfoColumn(context, [
-                                        Text('Lead Count : ${visit.LeadCount?.toString() }')
-                                            .Style(),
-                                        Text(' ${visit.NotchFilter?.toString() }')
-                                            .Style(),
-                                      ]),
-
-                                    ],
-                                  ),
-                                ),
-                                buildDivider(context),
-                                buildCard(
-                                  context,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Tg : ${visit.Tg?.toString() }')
-                                          .Style(),
-                                      Text('Ldl : ${visit.Ldl?.toString() }')
-                                          .Style(),
-                                      Text('Hdl : ${visit.Hdl?.toString() }')
-                                          .Style(),
-                                      Text('Glucose : ${visit.Glucose }')
-                                          .Style(),
-                                    ],
-                                  ),
-                                ),
-                                buildDivider(context),
-                                if (imageBytes != null)
-                                  buildCard(
-                                    context,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: Image.memory(
-                                        imageBytes,
-                                        height:
-                                        AppValues.getHight(context) * 0.3,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  )
-                                else if (imageBytes == null)
-                                  buildCard(
-                                    context,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: Center(
-                                          child:
-                                          Text('Image is not available')),
-                                    ),
-                                  ),
-                                buildDivider(context),
-                                buildCard(
-                                  context,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(
-                                        AppValues.getWidth(context) * 0.03),
-                                    child: Text(
-                                        'Description : ${visit.Description ?? ''}')
-                                        .Style(),
-                                  ),
-                                ),
-                                buildDivider(context),
-                                buildCard(
-                                  context,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('Signal :').Style(),
-                                        SizedBox(
-                                          height: 400,
-                                          child: SignalChart(
-                                            signals: visit.FlSignal ?? [],
-                                          ),
-                                        ),
-                                      ],
+                              ),
+                            )
+                          else
+                            buildCard(
+                              context,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Center(child: Text(
+                                    'Image is not available')),
+                              ),
+                            ),
+                          buildDivider(context),
+                          buildCard(
+                            context,
+                            child: Padding(
+                              padding: EdgeInsets.all(AppValues.getWidth(
+                                  context) * 0.03),
+                              child: Text('Description : ${visitModel
+                                  .Description ?? ''}')
+                                  .Style(),
+                            ),
+                          ),
+                          buildDivider(context),
+                          buildCard(
+                            context,
+                            child: Padding(
+                              padding:
+                              EdgeInsets.all(MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width * 0.03),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Signal :').Style(),
+                                  SizedBox(
+                                    height: 400,
+                                    child: SignalChart(
+                                      signals: visitModel.FlSignal ?? [],
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: AppValues.getHight(context) * 0.08,
-                                  width: AppValues.getWidth(context) * 0.8,
-                                  child: Divider(
-                                    color: Colors.indigo,
-                                    height: AppValues.getHight(context) * 1,
-                                    thickness: 4,
-                                  ),
-                                )
-                              ]));
-                    });
-              }
-            }));
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: AppValues.getHight(context) * 0.08,
+                            width: AppValues.getWidth(context) * 0.8,
+                            child: Divider(
+                              color: Colors.indigo,
+                              height: AppValues.getHight(context) * 1,
+                              thickness: 4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                );
+            }
+          }
+      ),
+    );
   }
 }
 
@@ -270,12 +253,12 @@ Widget buildInfoColumn(BuildContext context, List<Widget> children) {
 
 Widget buildDivider(BuildContext context) {
   return SizedBox(
-    height: AppValues.getHight(context) * 0.03,
-    width: AppValues.getWidth(context) * 0.8,
-    child: Divider(
-      color: Colors.blue,
-      height: AppValues.getHight(context) * 0.1,
-      thickness: 2,
-    ),
+      height: AppValues.getHight(context) * 0.03,
+      width: AppValues.getWidth(context) * 0.8,
+      child: Divider(
+        color: Colors.blue,
+        height: AppValues.getHight(context) * 0.1,
+        thickness: 2,
+      )
   );
 }

@@ -7,6 +7,7 @@ import 'package:untitled2/Bidings/app_bidings.dart';
 import 'package:untitled2/Screens/ambulance_list_screen.dart';
 import 'package:untitled2/Model/ambulance_model.dart';
 import 'package:untitled2/Screens/report_list_screen.dart';
+import 'package:untitled2/Screens/setting_screen.dart';
 import 'Screens/visit_list_screen.dart';
 
 class MyHttpOverrides extends HttpOverrides {
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/ambulance_screen', page: () => AmbulanceListScreen()),
         GetPage(name:'/screen_visit',page:()=> VisitScreen()),
         GetPage(name:'/screen_report',page:()=> ReportScreen()),
+        GetPage(name: '/Setting', page: ()=> SettingScreen()),
       ],
     );
   }
