@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
 import '../AppValues/app_values.dart';
 
@@ -10,7 +10,12 @@ class SettingScreen extends StatelessWidget {
     final TextEditingController _controller = TextEditingController();
     final ValueNotifier<List<Widget>> selectedContent = ValueNotifier<List<Widget>>([]);
 
-    final ValueNotifier<String> apiBaseUrl = ValueNotifier<String>(AppValues.API_BASE_URL);
+    final _box = GetStorage();
+
+
+    final ValueNotifier<String> apiBaseUrl = ValueNotifier<String>(_box.read('apiBaseUrl') ?? AppValues.API_BASE_URL);
+
+    final bool isDarkMode = _box.read('isDarkMode') ?? false;
 
     apiBaseUrl.addListener(() {
       print("API_BASE_URL changed to: ${apiBaseUrl.value}");
@@ -53,9 +58,12 @@ class SettingScreen extends StatelessWidget {
                 String newUrl = _controller.text.trim();
                 apiBaseUrl.value = newUrl;
                 AppValues.updateBaseUrl(newUrl);
+
+                _box.write('apiBaseUrl', newUrl);
+
                 Get.snackbar('Success', 'Base URL updated to: ${apiBaseUrl.value}');
               },
-              child: Text('Confirm :)'),
+              child: Text('Confirm '),
             ),
           ],
         ),
@@ -67,6 +75,9 @@ class SettingScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Get.changeTheme(ThemeData.dark());
+
+
+                _box.write('isDarkMode', true);
               },
               child: Row(
                 children: [
@@ -81,6 +92,8 @@ class SettingScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Get.changeTheme(ThemeData.light());
+
+                _box.write('isDarkMode', false);
               },
               child: Row(
                 children: [
@@ -127,7 +140,7 @@ class SettingScreen extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Container(
-              padding: EdgeInsets.all(AppValues.getWidth(context) * 0.005),
+              padding: EdgeInsets.all(8.0),
               color: Colors.white,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,

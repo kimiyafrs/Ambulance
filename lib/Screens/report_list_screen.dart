@@ -74,8 +74,8 @@ class ReportScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ListTile(
-                                  title: Text(report.Code.toString()),
-                                  subtitle: Text(report.PatientName.toString()),
+                                  title: Text('Ambulance Code:${report.Code.toString()}'),
+                                  subtitle: Text('Patient Name:${report.PatientName.toString()}'),
                                   trailing: Text(report.TimeJalali ?? ''),
                                 ),
                               ],

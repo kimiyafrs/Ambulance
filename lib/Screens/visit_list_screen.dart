@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:untitled2/Screens/saved_visits.dart';
 import '../Chart/signal_chart.dart';
 import '../Extension/extensions.dart';
 import '../AppValues/app_values.dart';
 import 'dart:typed_data';
 import '../Http/http_view_model.dart';
 import '../Model/visit_model.dart';
+import '../widgets.dart';
 
 /// Displays the visit details based on the selected report from the ReportScreen.
 /// The visit information is presented in various cards, and if an image is available, it is shown.
@@ -213,6 +216,63 @@ class VisitScreen extends StatelessWidget {
                               thickness: 4,
                             ),
                           ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              try {
+                                final box = Hive.box('SaveVisitBox');
+                                final savedVisit = SavedVisits(
+                                  patientName: visitModel.PatientName,
+                                  patientAge: visitModel.PatientAge,
+                                  patientGender: visitModel.PatientGender,
+                                  patientNationalCode: visitModel.PatientNationalCode,
+                                  FlSignal: visitModel.FlSignal,
+                                  description:visitModel.Description,
+                                  ecgFilter: visitModel.EcgFilter,
+                                  glucose: visitModel.Glucose,
+                                  hdl:visitModel.Hdl,
+                                  notchFilter:visitModel.NotchFilter,
+                                  tg:visitModel.Tg,
+                                  fico2:visitModel.Fico2,
+                                  Rr:visitModel.Rr,
+                                  hr:visitModel.Hr,
+                                  etco2:visitModel.Etco2,
+                                  leadCount:visitModel.LeadCount,
+                                  masterLead:visitModel.MasterLead,
+                                  nibpDias:visitModel.NibpDias,
+                                  nibpSys: visitModel.NibpSys,
+                                  nibpMean: visitModel.NibpMean,
+                                  paces:visitModel.Paces,
+                                  pcg:visitModel.Pcg,
+                                  pdrReportAdrress:visitModel.PdrReportAdrress,
+                                  pr:visitModel.Pr,
+                                  resp:visitModel.Resp,
+                                  spo2:visitModel.Spo2,
+                                  t1: visitModel.T1,
+                                  t2: visitModel.T2,
+                                  ldl: visitModel.Ldl,
+                                    wires:visitModel.Wires,
+                                  image: visitModel.Image,
+
+                                );
+                                await box.add(savedVisit);
+
+
+                                Get.snackbar('Saved', 'This visit has been saved',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.green,
+                                    colorText: Colors.white);
+                              } catch (e) {
+
+                                Get.snackbar('Error', 'Failed to save visit',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white);
+                                print('Error saving visit: $e');
+                              }
+                            },
+                            child: Text('Save'),
+                          ),
+
                         ],
                       ),
                     )
@@ -220,45 +280,10 @@ class VisitScreen extends StatelessWidget {
             }
           }
       ),
+
     );
   }
 }
 
-Widget buildCard(BuildContext context, {required Widget child}) {
-  return SizedBox(
-    width: AppValues.getWidth(context) * 0.9,
-    child: Card(
-      elevation: 10.0,
-      color: Colors.cyan.shade200,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.blue, width: 1),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(AppValues.getWidth(context) * 0.03),
-        child: child,
-      ),
-    ),
-  );
-}
 
-Widget buildInfoColumn(BuildContext context, List<Widget> children) {
-  return Expanded(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
-    ),
-  );
-}
 
-Widget buildDivider(BuildContext context) {
-  return SizedBox(
-      height: AppValues.getHight(context) * 0.03,
-      width: AppValues.getWidth(context) * 0.8,
-      child: Divider(
-        color: Colors.blue,
-        height: AppValues.getHight(context) * 0.1,
-        thickness: 2,
-      )
-  );
-}
