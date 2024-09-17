@@ -73,7 +73,7 @@ class SavedVisits {
   String? glucose;
 
   @HiveField(11)
-  int? pcg;
+  List? pcg;
 
   @HiveField(12)
   int? paces;
